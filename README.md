@@ -39,12 +39,12 @@ uv run jupyter lab
 | [8_iterative_Workflows.ipynb](session1_langgraph_basics/8_iterative_Workflows.ipynb) | Loops until a stop condition |
 | [9_specialist_vs_generalist.ipynb](session1_langgraph_basics/9_specialist_vs_generalist.ipynb) | One agent vs routed specialists |
 
-## Session 2: Chatbots and Persistence
+## Session 2: Advanced LangGraph Topics
 
 | Notebook | Topic |
 | --- | --- |
-| [1_basic_chatbot_llm.ipynb](session2/1_basic_chatbot_llm.ipynb) | Message-based chatbot, then memory with `MemorySaver` |
-| [2_persistence.ipynb](session2/2_persistence.ipynb) | Checkpoints, `thread_id`, state history, and fault tolerance |
+| [1_basic_chatbot_llm.ipynb](session2_advanced_langgraph_topics/1_basic_chatbot_llm.ipynb) | Message-based chatbot, then memory with `MemorySaver` |
+| [2_persistence.ipynb](session2_advanced_langgraph_topics/2_persistence.ipynb) | Checkpoints, `thread_id`, state history, and fault tolerance |
 
 ## Concepts covered
 
