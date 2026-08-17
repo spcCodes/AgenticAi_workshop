@@ -1,10 +1,8 @@
 # Agentic AI Workshop
 
-Hands-on LangGraph notebooks for building agentic workflows: state, nodes, edges, routing, specialists, and persistence.
+Hands-on LangGraph notebooks for building agentic workflows: state, nodes, edges, routing, specialists, chatbots, and persistence.
 
 Concept notes: [explanations/explanation.md](explanations/explanation.md)
-
-Diagrams: [diagrams/diag.excalidraw](diagrams/diag.excalidraw)
 
 ## Setup
 
@@ -41,11 +39,12 @@ uv run jupyter lab
 | [8_iterative_Workflows.ipynb](session1_langgraph_basics/8_iterative_Workflows.ipynb) | Loops until a stop condition |
 | [9_specialist_vs_generalist.ipynb](session1_langgraph_basics/9_specialist_vs_generalist.ipynb) | One agent vs routed specialists |
 
-## Session 2: Persistence
+## Session 2: Chatbots and Persistence
 
 | Notebook | Topic |
 | --- | --- |
-| [1_persistence.ipynb](session2/1_persistence.ipynb) | Stateless vs stateful graphs with a checkpointer |
+| [1_basic_chatbot_llm.ipynb](session2/1_basic_chatbot_llm.ipynb) | Message-based chatbot, then memory with `MemorySaver` |
+| [2_persistence.ipynb](session2/2_persistence.ipynb) | Checkpoints, `thread_id`, state history, and fault tolerance |
 
 ## Concepts covered
 
@@ -55,4 +54,5 @@ uv run jupyter lab
 - Conditional routing
 - Iterative loops
 - Specialist vs generalist agents
-- Persistence: stateless vs stateful (`MemorySaver`, `thread_id`)
+- Chatbots with `add_messages`
+- Persistence: checkpointers, `thread_id`, `get_state_history`, fault tolerance
