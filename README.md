@@ -1,6 +1,6 @@
 # Agentic AI Workshop
 
-Hands-on LangGraph notebooks for building agentic workflows: state, nodes, edges, routing, specialists, chatbots, and persistence.
+Hands-on LangGraph notebooks for building agentic workflows: state, nodes, edges, routing, specialists, chatbots, persistence, streaming, observability, and tools.
 
 Concept notes: [explanations/explanation.md](explanations/explanation.md)
 
@@ -17,13 +17,29 @@ Add your keys to `.env`:
 
 ```
 OPENAI_API_KEY=your_openai_api_key_here
+TAVILY_API_KEY=your_tavily_api_key_here
+LANGCHAIN_TRACING_V2=true
+LANGSMITH_API_KEY=your_langsmith_api_key_here
 ```
+
+- `OPENAI_API_KEY` — LLM calls
+- `TAVILY_API_KEY` — web search tool (Session 2 tools notebook)
+- `LANGSMITH_API_KEY` + `LANGCHAIN_TRACING_V2` — LangSmith tracing (observability)
 
 Then open the notebooks in Jupyter or Cursor.
 
 ```bash
 uv run jupyter lab
 ```
+
+### Streamlit chatbot demo
+
+```bash
+cd session2_advanced_langgraph_topics
+uv run streamlit run chatbot_frontend.py
+```
+
+Local SQLite files such as `chatbot.db` (and `-shm` / `-wal`) are gitignored. They are created when you run the database checkpointer notebooks.
 
 ## Session 1: LangGraph Basics
 
@@ -41,10 +57,16 @@ uv run jupyter lab
 
 ## Session 2: Advanced LangGraph Topics
 
-| Notebook | Topic |
+| Notebook / file | Topic |
 | --- | --- |
 | [1_basic_chatbot_llm.ipynb](session2_advanced_langgraph_topics/1_basic_chatbot_llm.ipynb) | Message-based chatbot, then memory with `MemorySaver` |
 | [2_persistence.ipynb](session2_advanced_langgraph_topics/2_persistence.ipynb) | Checkpoints, `thread_id`, state history, and fault tolerance |
+| [3_streaming_langgraph.ipynb](session2_advanced_langgraph_topics/3_streaming_langgraph.ipynb) | Token streaming with `stream_mode='messages'` |
+| [4_database_checkpointer.ipynb](session2_advanced_langgraph_topics/4_database_checkpointer.ipynb) | Durable memory with `SqliteSaver` |
+| [5_observability_langgraph.ipynb](session2_advanced_langgraph_topics/5_observability_langgraph.ipynb) | LangSmith tracing for runs and threads |
+| [6_tools_langgraph.ipynb](session2_advanced_langgraph_topics/6_tools_langgraph.ipynb) | Tools, `ToolNode`, `tools_condition`, Tavily search |
+| [chatbot_backend.py](session2_advanced_langgraph_topics/chatbot_backend.py) | Compiled chatbot graph used by the UI |
+| [chatbot_frontend.py](session2_advanced_langgraph_topics/chatbot_frontend.py) | Streamlit chat UI |
 
 ## Concepts covered
 
@@ -56,3 +78,7 @@ uv run jupyter lab
 - Specialist vs generalist agents
 - Chatbots with `add_messages`
 - Persistence: checkpointers, `thread_id`, `get_state_history`, fault tolerance
+- Streaming responses
+- SQLite / durable checkpointers
+- Observability with LangSmith
+- Tool calling with `ToolNode` and `tools_condition`

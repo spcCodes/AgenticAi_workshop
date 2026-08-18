@@ -129,3 +129,75 @@ workflow.invoke({'question': 'What is my name?'}, config=config)
 Earlier notebooks were stateless. The graph had state **during** one run, but nothing was kept for the next run.
 
 Iterative workflows loop inside one `invoke`. Persistence remembers across many `invoke` calls.
+
+---
+
+## Streaming
+
+`invoke` waits for the full answer. `stream` yields chunks as they arrive, which is what chat UIs need.
+
+```python
+for message_chunk, metadata in chatbot.stream(
+    {'messages': [HumanMessage(content=user_input)]},
+    config=config,
+    stream_mode='messages',
+):
+    ...
+```
+
+`stream_mode='messages'` streams LLM tokens (and related message updates) instead of waiting for the finished state.
+
+Use streaming when the user should see the reply grow token by token.
+
+---
+
+## SQLite Checkpointer (Durable Memory)
+
+`MemorySaver` / `InMemorySaver` keeps checkpoints in process memory. Restart the app and the memory is gone.
+
+`SqliteSaver` writes checkpoints to a SQLite file, so threads survive restarts:
+
+```python
+import sqlite3
+from langgraph.checkpoint.sqlite import SqliteSaver
+
+conn = sqlite3.connect('chatbot.db', check_same_thread=False)
+checkpointer = SqliteSaver(conn=conn)
+chatbot = graph.compile(checkpointer=checkpointer)
+```
+
+Same `thread_id` idea as before. The difference is where the checkpoints live: RAM vs disk.
+
+Local files like `chatbot.db`, `chatbot.db-shm`, and `chatbot.db-wal` are runtime artifacts and should stay out of git.
+
+---
+
+## Observability (LangSmith)
+
+Observability means you can see what the graph did: inputs, outputs, latency, tool calls, and failures.
+
+With LangSmith enabled (`LANGCHAIN_TRACING_V2=true` and `LANGSMITH_API_KEY`), LangGraph / LangChain runs show up as traces. Thread-aware configs help you follow one conversation across multiple turns.
+
+Use this when debugging routing, tools, or slow steps — the UI shows the path the graph actually took.
+
+---
+
+## Tools (`ToolNode` and `tools_condition`)
+
+A **tool** is a function the LLM can call (search, calculator, APIs). In LangGraph:
+
+1. Bind tools to the model.
+2. Add a `ToolNode` that runs the chosen tool(s).
+3. Use `tools_condition` so the graph either calls tools or finishes.
+
+```python
+from langgraph.prebuilt import ToolNode, tools_condition
+
+tool_node = ToolNode(tools)
+graph.add_node('tools', tool_node)
+graph.add_conditional_edges('chat_node', tools_condition)
+```
+
+Typical loop: chat node → (if tool call) tools node → back to chat node → END when done.
+
+Session 2 uses Tavily search as an example tool. The LLM decides when search is needed; the graph runs the tool and feeds the result back into the conversation.

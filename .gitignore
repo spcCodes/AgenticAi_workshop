@@ -224,4 +224,13 @@ ppt/
 # OS
 .DS_Store
 
+# Local SQLite checkpointer / chat memory
+*.db
+*.db-shm
+*.db-wal
+chatbot.db*
+
+# Bytecode caches (also covered above; keep explicit for notebooks/scripts)
+**/__pycache__/
+
 diagrams/
