@@ -85,6 +85,7 @@ Sample PDF for RAG lives in [`data/intro-to-ml.pdf`](data/intro-to-ml.pdf).
 | [5_stm_trimming_deletion.ipynb](session3_reliable_agent_execution/5_stm_trimming_deletion.ipynb) | Keep STM small with `trim_messages` and `RemoveMessage` |
 | [6_stm_summarisation.ipynb](session3_reliable_agent_execution/6_stm_summarisation.ipynb) | Compress old turns into a `summary` field, then delete raw messages |
 | [7_ltm_basics.ipynb](session3_reliable_agent_execution/7_ltm_basics.ipynb) | Long-term memory with `InMemoryStore`: namespaces, get/search, semantic search |
+| [8_ltm_implementation.ipynb](session3_reliable_agent_execution/8_ltm_implementation.ipynb) | Wire Store into a chatbot: read memories, write new ones, avoid duplicates |
 
 ## Concepts covered
 
@@ -107,3 +108,4 @@ Sample PDF for RAG lives in [`data/intro-to-ml.pdf`](data/intro-to-ml.pdf).
 - STM control: `trim_messages` (token budget) and `RemoveMessage` (delete old messages)
 - STM summarisation: rolling `summary` in state, then drop old messages
 - Long-term memory: `InMemoryStore`, namespaces, key lookup, semantic search
+- LTM in a graph: inject Store via `compile(store=...)`, read/write with `user_id`

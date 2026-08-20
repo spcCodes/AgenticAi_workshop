@@ -453,3 +453,30 @@ hits = store.search(namespace, query="what is the user currently learning", limi
 
 STM answers “what did we say in this thread?”  
 LTM answers “what do we know about this user across sessions?”
+
+---
+
+## LTM in a Chatbot Graph
+
+Session 3 next wires the Store into graph nodes. Pass `store=` at compile time and take `store: BaseStore` in the node signature. Scope memories with `user_id` from config:
+
+```python
+def chat_node(state: MessagesState, config: RunnableConfig, store: BaseStore):
+    user_id = config["configurable"]["user_id"]
+    namespace = ("user", user_id, "details")
+    items = store.search(namespace)
+    # inject memories into the system prompt, then call the model
+    ...
+
+graph = builder.compile(store=store)
+graph.invoke(..., config={"configurable": {"user_id": "u1"}})
+```
+
+Common teaching steps in the notebook:
+
+1. **Read** — seed the Store, search the user namespace, put facts into the prompt
+2. **Write** — an LLM with structured output decides `should_write` + memory strings, then `store.put`
+3. **Avoid duplicates** — search existing memories first; only store items marked new
+4. **Merged workflow** — chat that both reads and writes in one graph
+
+Checkpointers still handle STM (thread messages). The Store handles LTM (user facts across turns/threads).
