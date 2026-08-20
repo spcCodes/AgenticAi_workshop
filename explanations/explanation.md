@@ -414,3 +414,42 @@ Compared with trimming/deletion alone:
 - **Summarise** — keep a compressed memory of what was said, then drop the verbose turns
 
 Use summarisation when you need long-running threads without blowing the context window or losing the gist.
+
+---
+
+## Long-Term Memory (LTM) and Stores
+
+**Short-term memory** is thread state (checkpointer + `thread_id`).  
+**Long-term memory** lives in a **Store** — facts keyed by namespace that can outlive a single chat thread.
+
+`InMemoryStore` is the in-process Store used in Session 3:
+
+```python
+from langgraph.store.memory import InMemoryStore
+
+store = InMemoryStore()
+namespace = ("user", "u1")
+
+store.put(namespace, "1", {"data": "User likes pizza"})
+item = store.get(namespace, "1")
+items = store.search(namespace)
+```
+
+- **Namespace** — a tuple that scopes memories (for example per user)
+- **Key** — id inside that namespace
+- **Value** — a JSON-like dict you store
+
+Different users use different namespaces so memories do not mix.
+
+### Semantic search
+
+With an embedding index, `search` can find memories by meaning, not only by key:
+
+```python
+store = InMemoryStore(index={"embed": embedding_model, "dims": 1536})
+store.put(namespace, "5", {"data": "User is learning machine learning"})
+hits = store.search(namespace, query="what is the user currently learning", limit=1)
+```
+
+STM answers “what did we say in this thread?”  
+LTM answers “what do we know about this user across sessions?”
