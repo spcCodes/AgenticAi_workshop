@@ -1,6 +1,6 @@
 # Agentic AI Workshop
 
-Hands-on LangGraph notebooks for building agentic workflows: state, nodes, edges, routing, specialists, chatbots, persistence, streaming, observability, tools, RAG, and human-in-the-loop.
+Hands-on LangGraph notebooks for building agentic workflows: state, nodes, edges, routing, specialists, chatbots, persistence, streaming, observability, tools, RAG, human-in-the-loop, subgraphs, and short-term memory.
 
 Concept notes: [explanations/explanation.md](explanations/explanation.md)
 
@@ -41,9 +41,11 @@ cd session2_advanced_langgraph_topics
 uv run streamlit run chatbot_frontend.py
 ```
 
-Local SQLite files such as `chatbot.db` (and `-shm` / `-wal`) are gitignored. They are created when you run the database checkpointer notebooks.
+Local SQLite files such as `chatbot.db` (and `-shm` / `-wal`) are gitignored. They are created when you run the database checkpointer notebooks. Postgres checkpointer extras (`langgraph-checkpoint-postgres`, `psycopg`) are in the project deps for durable memory beyond SQLite.
 
 Sample PDF for RAG lives in [`data/intro-to-ml.pdf`](data/intro-to-ml.pdf).
+
+zsh treats `[]` as a glob. Quote extras when installing, for example `uv add "psycopg[binary,pool]"`.
 
 ## Session 1: LangGraph Basics
 
@@ -76,8 +78,10 @@ Sample PDF for RAG lives in [`data/intro-to-ml.pdf`](data/intro-to-ml.pdf).
 
 | Notebook | Topic |
 | --- | --- |
-| [1_rag_langgraph.ipynb](session3_relaible_agent_execution/1_rag_langgraph.ipynb) | PDF → chunks → FAISS → RAG tool in a LangGraph chatbot |
-| [2_hitl_langgraph.ipynb](session3_relaible_agent_execution/2_hitl_langgraph.ipynb) | Human-in-the-loop with `interrupt` and `Command(resume=...)` |
+| [1_rag_langgraph.ipynb](session3_reliable_agent_execution/1_rag_langgraph.ipynb) | PDF → chunks → FAISS → RAG tool in a LangGraph chatbot |
+| [2_hitl_langgraph.ipynb](session3_reliable_agent_execution/2_hitl_langgraph.ipynb) | Human-in-the-loop with `interrupt` and `Command(resume=...)` |
+| [3_subgraphs_langgraph.ipynb](session3_reliable_agent_execution/3_subgraphs_langgraph.ipynb) | Private vs shared subgraph state, plus interrupt/resume |
+| [4_stm_basics.ipynb](session3_reliable_agent_execution/4_stm_basics.ipynb) | Short-term memory basics (thread-scoped conversation state) |
 
 ## Concepts covered
 
@@ -95,3 +99,6 @@ Sample PDF for RAG lives in [`data/intro-to-ml.pdf`](data/intro-to-ml.pdf).
 - Tool calling with `ToolNode` and `tools_condition`
 - RAG: load, split, embed, retrieve, answer from documents
 - Human-in-the-loop: pause for approval, then resume
+- Subgraphs: private state vs shared state
+- Short-term memory: thread-scoped state across turns
+- Postgres checkpointer extras for durable memory

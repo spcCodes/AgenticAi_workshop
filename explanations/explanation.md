@@ -1,6 +1,6 @@
 # LangGraph Concepts
 
-Quick notes from Session 1 and Session 2.
+Quick notes from Session 1, Session 2, and Session 3.
 
 ---
 
@@ -168,6 +168,8 @@ chatbot = graph.compile(checkpointer=checkpointer)
 
 Same `thread_id` idea as before. The difference is where the checkpoints live: RAM vs disk.
 
+`langgraph-checkpoint-postgres` plus `psycopg[binary,pool]` are also in the project if you want the same idea on Postgres instead of a local SQLite file.
+
 Local files like `chatbot.db`, `chatbot.db-shm`, and `chatbot.db-wal` are runtime artifacts and should stay out of git.
 
 ---
@@ -262,3 +264,71 @@ app.invoke(Command(resume={"approved": "yes"}), config=config)
 ```
 
 Use HITL for risky actions: sending emails, spending money, deleting data, or any step that needs a human gate.
+
+---
+
+## Subgraphs (Private vs Shared State)
+
+A **subgraph** is a compiled graph used inside a parent graph. Session 3 uses a parent that answers in English, then a subgraph that translates to Hindi.
+
+**Private state** — parent and subgraph have different keys.
+
+```python
+class SubState(TypedDict):
+    input_text: str
+    translated_text: str
+
+class ParentState(TypedDict):
+    question: str
+    answer_eng: str
+    answer_hin: str
+```
+
+You call the subgraph yourself and map fields:
+
+```python
+result = subgraph.invoke({"input_text": state["answer_eng"]})
+return {"answer_hin": result["translated_text"]}
+```
+
+The subgraph never sees `question` or `answer_eng`. Its keys never land on the parent unless you copy them.
+
+**Shared state** — both graphs use the same schema. Nest the compiled subgraph as a node:
+
+```python
+parent_builder.add_node("translate", subgraph)
+```
+
+Overlapping keys flow automatically. `translate_text` can read `answer_eng` and write `answer_hin`.
+
+**If a run is interrupted** (Jupyter stop, crash, delay):
+
+- A checkpointer still saves completed **parent** nodes in both patterns.
+- Private state: subgraph keys stay off the parent. You can wrap `subgraph.invoke(...)` in `try/except`.
+- Shared state: the subgraph **is** a parent node, so its error **is** the parent `invoke()` error. There is no separate helper call to catch.
+
+Use private state for a reusable helper. Use shared state when the subgraph is just a nested piece of the same workflow.
+
+---
+
+## Short-Term Memory (STM)
+
+**Short-term memory** is what the agent remembers in the current conversation (one `thread_id`). In LangGraph that is the checkpointed graph state: messages, slots, and anything else in the schema.
+
+It is not a second database. It is the same persistence idea from Session 2:
+
+```python
+config = {"configurable": {"thread_id": "user-1"}}
+graph.invoke({"messages": [HumanMessage(content="My name is Suman")]}, config=config)
+graph.invoke({"messages": [HumanMessage(content="What is my name?")]}, config=config)
+```
+
+Turn 2 reloads the thread checkpoint, so the model still sees the earlier messages.
+
+Compared with other memory types:
+
+- **During one `invoke`** — state fields the nodes pass around (no checkpointer needed)
+- **Short-term** — across turns in the same thread (checkpointer + `thread_id`)
+- **Long-term** — across threads or sessions (a Store, files, or an external DB)
+
+STM dies if you change `thread_id`, compile without a checkpointer, or use an in-memory checkpointer and restart the process. A SQLite or Postgres checkpointer keeps that thread memory on disk.
