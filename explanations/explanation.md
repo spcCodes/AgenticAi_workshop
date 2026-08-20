@@ -201,3 +201,64 @@ graph.add_conditional_edges('chat_node', tools_condition)
 Typical loop: chat node → (if tool call) tools node → back to chat node → END when done.
 
 Session 2 uses Tavily search as an example tool. The LLM decides when search is needed; the graph runs the tool and feeds the result back into the conversation.
+
+---
+
+## RAG (Retrieval-Augmented Generation)
+
+RAG means: retrieve relevant text from your documents, then let the LLM answer using that context — instead of guessing from training data alone.
+
+Typical pipeline in Session 3:
+
+1. **Load** a PDF (`PyPDFLoader`)
+2. **Split** into chunks (`RecursiveCharacterTextSplitter`)
+3. **Embed** and store in a vector DB (`OpenAIEmbeddings` + `FAISS`)
+4. **Retrieve** top-k similar chunks for a query
+5. Expose retrieval as a **tool** (`rag_tool`) inside a LangGraph chatbot with `ToolNode` / `tools_condition`
+
+```python
+vector_store = FAISS.from_documents(chunks, embeddings)
+retriever = vector_store.as_retriever(search_type='similarity', search_kwargs={'k': 4})
+
+@tool
+def rag_tool(query: str) -> str:
+    """Retrieve relevant information from the PDF."""
+    docs = retriever.invoke(query)
+    ...
+```
+
+The graph looks like the tools chatbot: chat node may call `rag_tool`, tool results go back to the chat node, then the model writes the final answer grounded in retrieved chunks.
+
+Use RAG when answers must come from a specific document or knowledge base.
+
+---
+
+## Human-in-the-Loop (HITL)
+
+HITL pauses the graph so a human can approve, edit, or reject before the agent continues.
+
+In LangGraph:
+
+1. Call `interrupt(...)` inside a node — the run stops and returns `__interrupt__`
+2. A checkpointer is **required** so state can resume later
+3. Resume with `Command(resume=...)` on the same `thread_id`
+
+```python
+def chat_node(state: ChatState):
+    decision = interrupt({
+        "type": "approval",
+        "question": state["messages"][-1].content,
+        "instruction": "Approve this question? yes/no",
+    })
+    if decision["approved"] == "no":
+        return {"messages": [AIMessage(content="Not approved.")]}
+    response = model.invoke(state["messages"])
+    return {"messages": [response]}
+
+app = builder.compile(checkpointer=MemorySaver())
+
+# later
+app.invoke(Command(resume={"approved": "yes"}), config=config)
+```
+
+Use HITL for risky actions: sending emails, spending money, deleting data, or any step that needs a human gate.

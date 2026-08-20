@@ -1,6 +1,6 @@
 # Agentic AI Workshop
 
-Hands-on LangGraph notebooks for building agentic workflows: state, nodes, edges, routing, specialists, chatbots, persistence, streaming, observability, and tools.
+Hands-on LangGraph notebooks for building agentic workflows: state, nodes, edges, routing, specialists, chatbots, persistence, streaming, observability, tools, RAG, and human-in-the-loop.
 
 Concept notes: [explanations/explanation.md](explanations/explanation.md)
 
@@ -18,12 +18,14 @@ Add your keys to `.env`:
 ```
 OPENAI_API_KEY=your_openai_api_key_here
 TAVILY_API_KEY=your_tavily_api_key_here
+OPENROUTER_API_KEY=your_openrouter_api_key_here
 LANGCHAIN_TRACING_V2=true
 LANGSMITH_API_KEY=your_langsmith_api_key_here
 ```
 
-- `OPENAI_API_KEY` — LLM calls
+- `OPENAI_API_KEY` — LLM / embeddings calls
 - `TAVILY_API_KEY` — web search tool (Session 2 tools notebook)
+- `OPENROUTER_API_KEY` — optional alternate model provider (commented examples in notebooks)
 - `LANGSMITH_API_KEY` + `LANGCHAIN_TRACING_V2` — LangSmith tracing (observability)
 
 Then open the notebooks in Jupyter or Cursor.
@@ -40,6 +42,8 @@ uv run streamlit run chatbot_frontend.py
 ```
 
 Local SQLite files such as `chatbot.db` (and `-shm` / `-wal`) are gitignored. They are created when you run the database checkpointer notebooks.
+
+Sample PDF for RAG lives in [`data/intro-to-ml.pdf`](data/intro-to-ml.pdf).
 
 ## Session 1: LangGraph Basics
 
@@ -68,6 +72,13 @@ Local SQLite files such as `chatbot.db` (and `-shm` / `-wal`) are gitignored. Th
 | [chatbot_backend.py](session2_advanced_langgraph_topics/chatbot_backend.py) | Compiled chatbot graph used by the UI |
 | [chatbot_frontend.py](session2_advanced_langgraph_topics/chatbot_frontend.py) | Streamlit chat UI |
 
+## Session 3: Reliable Agent Execution
+
+| Notebook | Topic |
+| --- | --- |
+| [1_rag_langgraph.ipynb](session3_relaible_agent_execution/1_rag_langgraph.ipynb) | PDF → chunks → FAISS → RAG tool in a LangGraph chatbot |
+| [2_hitl_langgraph.ipynb](session3_relaible_agent_execution/2_hitl_langgraph.ipynb) | Human-in-the-loop with `interrupt` and `Command(resume=...)` |
+
 ## Concepts covered
 
 - Nodes, edges, state, and graphs
@@ -82,3 +93,5 @@ Local SQLite files such as `chatbot.db` (and `-shm` / `-wal`) are gitignored. Th
 - SQLite / durable checkpointers
 - Observability with LangSmith
 - Tool calling with `ToolNode` and `tools_condition`
+- RAG: load, split, embed, retrieve, answer from documents
+- Human-in-the-loop: pause for approval, then resume

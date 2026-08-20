@@ -9,6 +9,12 @@ from dotenv import load_dotenv
 load_dotenv()
 
 llm = ChatOpenAI(model = "gpt-5.4-mini-2026-03-17" , temperature = 0)
+# llm = ChatOpenAI(
+#     model="openai/gpt-5.4-mini",
+#     api_key=os.getenv("OPENROUTER_API_KEY"),
+#     base_url="https://openrouter.ai/api/v1",
+#     temperature=0,
+# )
 
 class ChatState(TypedDict):
     messages: Annotated[list[BaseMessage], add_messages]

@@ -233,4 +233,12 @@ chatbot.db*
 # Bytecode caches (also covered above; keep explicit for notebooks/scripts)
 **/__pycache__/
 
+# Local vector indexes / RAG runtime artifacts
+*.faiss
+*.index
+faiss_index/
+.chroma/
+chroma/
+*.pkl
+
 diagrams/
