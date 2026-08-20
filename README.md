@@ -17,16 +17,18 @@ Add your keys to `.env`:
 
 ```
 OPENAI_API_KEY=your_openai_api_key_here
+LANGCHAIN_TRACING_V2=true
+LANGCHAIN_ENDPOINT='https://api.smith.langchain.com'
+LANGSMITH_API_KEY=your_langsmith_api_key_here
+LANGSMITH_PROJECT='Chatbot Project'
 TAVILY_API_KEY=your_tavily_api_key_here
 OPENROUTER_API_KEY=your_openrouter_api_key_here
-LANGCHAIN_TRACING_V2=true
-LANGSMITH_API_KEY=your_langsmith_api_key_here
 ```
 
 - `OPENAI_API_KEY` — LLM / embeddings calls
 - `TAVILY_API_KEY` — web search tool (Session 2 tools notebook)
 - `OPENROUTER_API_KEY` — optional alternate model provider (commented examples in notebooks)
-- `LANGSMITH_API_KEY` + `LANGCHAIN_TRACING_V2` — LangSmith tracing (observability)
+- `LANGSMITH_API_KEY` + `LANGCHAIN_TRACING_V2` + `LANGCHAIN_ENDPOINT` + `LANGSMITH_PROJECT` — LangSmith tracing (observability)
 
 Then open the notebooks in Jupyter or Cursor.
 
