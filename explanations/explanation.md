@@ -383,3 +383,34 @@ def delete_old_messages(state):
 ```
 
 Wire a cleanup node after chat so deletion runs each turn. Trimming limits what the model sees; deletion limits what the thread stores.
+
+---
+
+## STM Summarisation
+
+When history is long, **summarise** older turns into one `summary` string in state, then delete the raw messages you no longer need. The next chat turn can inject that summary as context.
+
+Typical pattern:
+
+1. Extend state with `summary: str` (on top of `MessagesState`)
+2. After chat, conditionally route to a `summarize` node when message count is high
+3. Summarize (or extend an existing summary), write `summary`, and return `RemoveMessage` for old ids
+
+```python
+class ChatState(MessagesState):
+    summary: str
+
+def should_summarize(state: ChatState) -> bool:
+    return len(state["messages"]) > 6
+
+# chat -> (should_summarize?) -> summarize -> END
+# chat -> END
+```
+
+Compared with trimming/deletion alone:
+
+- **Trim** — full history may still sit in the checkpointer; model only sees a window
+- **Delete** — drop messages with no replacement
+- **Summarise** — keep a compressed memory of what was said, then drop the verbose turns
+
+Use summarisation when you need long-running threads without blowing the context window or losing the gist.

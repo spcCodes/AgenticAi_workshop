@@ -1,6 +1,6 @@
 # Agentic AI Workshop
 
-Hands-on LangGraph notebooks for building agentic workflows: state, nodes, edges, routing, specialists, chatbots, persistence, streaming, observability, tools, RAG, human-in-the-loop, subgraphs, short-term memory, and message trimming/deletion.
+Hands-on LangGraph notebooks for building agentic workflows: state, nodes, edges, routing, specialists, chatbots, persistence, streaming, observability, tools, RAG, human-in-the-loop, subgraphs, short-term memory, trimming/deletion, and conversation summarisation.
 
 Concept notes: [explanations/explanation.md](explanations/explanation.md)
 
@@ -83,6 +83,7 @@ Sample PDF for RAG lives in [`data/intro-to-ml.pdf`](data/intro-to-ml.pdf).
 | [3_subgraphs_langgraph.ipynb](session3_reliable_agent_execution/3_subgraphs_langgraph.ipynb) | Private vs shared subgraph state, plus interrupt/resume |
 | [4_stm_basics.ipynb](session3_reliable_agent_execution/4_stm_basics.ipynb) | STM: no memory → `InMemorySaver` → `SqliteSaver`, plus reading a thread from outside |
 | [5_stm_trimming_deletion.ipynb](session3_reliable_agent_execution/5_stm_trimming_deletion.ipynb) | Keep STM small with `trim_messages` and `RemoveMessage` |
+| [6_stm_summarisation.ipynb](session3_reliable_agent_execution/6_stm_summarisation.ipynb) | Compress old turns into a `summary` field, then delete raw messages |
 
 ## Concepts covered
 
@@ -103,3 +104,4 @@ Sample PDF for RAG lives in [`data/intro-to-ml.pdf`](data/intro-to-ml.pdf).
 - Subgraphs: private state vs shared state
 - Short-term memory: in-memory vs SQLite checkpointers, `get_state` from another process
 - STM control: `trim_messages` (token budget) and `RemoveMessage` (delete old messages)
+- STM summarisation: rolling `summary` in state, then drop old messages
