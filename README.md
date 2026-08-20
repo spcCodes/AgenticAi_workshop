@@ -83,7 +83,7 @@ zsh treats `[]` as a glob. Quote extras when installing, for example `uv add "ps
 | [1_rag_langgraph.ipynb](session3_reliable_agent_execution/1_rag_langgraph.ipynb) | PDF → chunks → FAISS → RAG tool in a LangGraph chatbot |
 | [2_hitl_langgraph.ipynb](session3_reliable_agent_execution/2_hitl_langgraph.ipynb) | Human-in-the-loop with `interrupt` and `Command(resume=...)` |
 | [3_subgraphs_langgraph.ipynb](session3_reliable_agent_execution/3_subgraphs_langgraph.ipynb) | Private vs shared subgraph state, plus interrupt/resume |
-| [4_stm_basics.ipynb](session3_reliable_agent_execution/4_stm_basics.ipynb) | Short-term memory basics (thread-scoped conversation state) |
+| [4_stm_basics.ipynb](session3_reliable_agent_execution/4_stm_basics.ipynb) | STM: no memory → `InMemorySaver` → `SqliteSaver`, plus reading a thread from outside |
 
 ## Concepts covered
 
@@ -102,5 +102,5 @@ zsh treats `[]` as a glob. Quote extras when installing, for example `uv add "ps
 - RAG: load, split, embed, retrieve, answer from documents
 - Human-in-the-loop: pause for approval, then resume
 - Subgraphs: private state vs shared state
-- Short-term memory: thread-scoped state across turns
+- Short-term memory: in-memory vs SQLite checkpointers, `get_state` from another process
 - Postgres checkpointer extras for durable memory

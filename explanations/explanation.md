@@ -315,7 +315,11 @@ Use private state for a reusable helper. Use shared state when the subgraph is j
 
 **Short-term memory** is what the agent remembers in the current conversation (one `thread_id`). In LangGraph that is the checkpointed graph state: messages, slots, and anything else in the schema.
 
-It is not a second database. It is the same persistence idea from Session 2:
+It is not a second database. It is the same persistence idea from Session 2. Session 3 walks the ladder:
+
+1. **No checkpointer** — each `invoke` starts fresh
+2. **`InMemorySaver`** — remembers across turns until the process exits
+3. **`SqliteSaver`** — same `thread_id` memory survives restarts on disk
 
 ```python
 config = {"configurable": {"thread_id": "user-1"}}
@@ -324,6 +328,16 @@ graph.invoke({"messages": [HumanMessage(content="What is my name?")]}, config=co
 ```
 
 Turn 2 reloads the thread checkpoint, so the model still sees the earlier messages.
+
+You can also **read** a saved thread without calling the LLM. Open the DB, compile with the same checkpointer, and call `get_state`:
+
+```python
+with SqliteSaver.from_conn_string("chatbot.db") as cp:
+    outside_graph = builder.compile(checkpointer=cp)
+    snap = outside_graph.get_state({"configurable": {"thread_id": "thread-1"}})
+```
+
+`get_state` only loads the checkpoint. Use `invoke` when you want a new turn.
 
 Compared with other memory types:
 
