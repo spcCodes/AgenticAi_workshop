@@ -344,3 +344,42 @@ Compared with other memory types:
 - **Long-term** — across threads or sessions (a Store, files, or an external DB)
 
 STM dies if you change `thread_id`, compile without a checkpointer, or use an in-memory checkpointer and restart the process. A SQLite checkpointer keeps that thread memory on disk.
+
+---
+
+## STM Trimming and Deletion
+
+Checkpointed conversations grow. If you pass the full history into the model every turn, cost and context length climb. Two common controls:
+
+### Trimming (`trim_messages`)
+
+Keep only recent messages that fit a **token budget** before calling the model. The full thread can still live in the checkpointer; you trim a copy for the LLM call.
+
+```python
+from langchain_core.messages.utils import trim_messages, count_tokens_approximately
+
+messages = trim_messages(
+    state["messages"],
+    strategy="last",
+    token_counter=count_tokens_approximately,
+    max_tokens=300,
+    start_on="human",
+    include_system=True,
+)
+```
+
+### Deletion (`RemoveMessage`)
+
+Actually remove messages from state (and therefore from the checkpoint on the next write). Useful when history should shrink permanently.
+
+```python
+from langchain.messages import RemoveMessage
+
+def delete_old_messages(state):
+    if len(state["messages"]) <= 10:
+        return {}
+    to_remove = state["messages"][:-4]  # keep the latest few
+    return {"messages": [RemoveMessage(id=m.id) for m in to_remove]}
+```
+
+Wire a cleanup node after chat so deletion runs each turn. Trimming limits what the model sees; deletion limits what the thread stores.
