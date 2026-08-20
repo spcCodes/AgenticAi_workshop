@@ -168,8 +168,6 @@ chatbot = graph.compile(checkpointer=checkpointer)
 
 Same `thread_id` idea as before. The difference is where the checkpoints live: RAM vs disk.
 
-`langgraph-checkpoint-postgres` plus `psycopg[binary,pool]` are also in the project if you want the same idea on Postgres instead of a local SQLite file.
-
 Local files like `chatbot.db`, `chatbot.db-shm`, and `chatbot.db-wal` are runtime artifacts and should stay out of git.
 
 ---
@@ -345,4 +343,4 @@ Compared with other memory types:
 - **Short-term** — across turns in the same thread (checkpointer + `thread_id`)
 - **Long-term** — across threads or sessions (a Store, files, or an external DB)
 
-STM dies if you change `thread_id`, compile without a checkpointer, or use an in-memory checkpointer and restart the process. A SQLite or Postgres checkpointer keeps that thread memory on disk.
+STM dies if you change `thread_id`, compile without a checkpointer, or use an in-memory checkpointer and restart the process. A SQLite checkpointer keeps that thread memory on disk.

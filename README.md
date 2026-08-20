@@ -43,11 +43,9 @@ cd session2_advanced_langgraph_topics
 uv run streamlit run chatbot_frontend.py
 ```
 
-Local SQLite files such as `chatbot.db` (and `-shm` / `-wal`) are gitignored. They are created when you run the database checkpointer notebooks. Postgres checkpointer extras (`langgraph-checkpoint-postgres`, `psycopg`) are in the project deps for durable memory beyond SQLite.
+Local SQLite files such as `chatbot.db` (and `-shm` / `-wal`) are gitignored. They are created when you run the database checkpointer notebooks.
 
 Sample PDF for RAG lives in [`data/intro-to-ml.pdf`](data/intro-to-ml.pdf).
-
-zsh treats `[]` as a glob. Quote extras when installing, for example `uv add "psycopg[binary,pool]"`.
 
 ## Session 1: LangGraph Basics
 
@@ -103,4 +101,3 @@ zsh treats `[]` as a glob. Quote extras when installing, for example `uv add "ps
 - Human-in-the-loop: pause for approval, then resume
 - Subgraphs: private state vs shared state
 - Short-term memory: in-memory vs SQLite checkpointers, `get_state` from another process
-- Postgres checkpointer extras for durable memory
